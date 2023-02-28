@@ -1,0 +1,21 @@
+[package]
+name = "spaceapi-dezentrale-server"
+description = "SpaceAPI server implementation for dezentrale"
+
+categories.workspace = true
+edition.workspace = true
+keywords.workspace = true
+include.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[dependencies]
+env_logger.workspace = true
+log.workspace = true
+rand.workspace = true
+rocket.workspace = true
+spaceapi-dezentrale.workspace = true
+serde.workspace = true
+serde_yaml.workspace = true

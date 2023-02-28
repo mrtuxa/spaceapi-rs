@@ -1,0 +1,20 @@
+# YAML representation of Status API used as template for publishing
+publish:
+  space: A space
+  logo: http://localhost/logo.svg
+  url: http://localhost
+  location:
+    address: Somewhere
+    lat: 56.68
+    lon: 12.34
+    timezone: Europe/Berlin
+  contact:
+    email: "foo@bar.local"
+  projects: []
+
+# Settings for administration
+admin:
+  # Enable admin routes
+  enable: true
+  # Set API key for access admin endpoint, if not set a random key will be generated
+  api_key: not-very-secure

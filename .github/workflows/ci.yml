@@ -1,22 +1,39 @@
 name: CI
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
-  build_and_test:
+  test:
     runs-on: ubuntu-22.04
-    container: rust:1.36
+    container: rust:1.67
     steps:
       - uses: actions/checkout@v3
-      - run: cargo build
       - run: cargo test
+
+  binaries_x86-64:
+    runs-on: ubuntu-22.04
+    container: rust:1.67
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build binaries
+        run: cargo build --release
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-without-markdown
+          path: |
+            target/release/spaceapi-dezentrale-client
+            target/release/spaceapi-dezentrale-server
 
   lint:
     runs-on: ubuntu-22.04
-    container: rust:1.65
+    container: rust:1.67
     steps:
       - uses: actions/checkout@v3
       - run: rustup component add clippy
@@ -24,7 +41,7 @@ jobs:
 
   fmt:
     runs-on: ubuntu-22.04
-    container: rust:1.65
+    container: rust:1.67
     steps:
       - uses: actions/checkout@v3
       - run: rustup component add rustfmt

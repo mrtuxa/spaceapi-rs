@@ -1,31 +1,60 @@
-# Rust SpaceAPI Implementation
+# Rust SpaceAPI Implementation of dezentrale
 
-[![GitHub Actions Build Status](https://github.com/spaceapi-community/spaceapi-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/spaceapi-community/spaceapi-rs/actions/workflows/ci.yml)
-[![Crates.io Version](https://img.shields.io/crates/v/spaceapi.svg)](https://crates.io/crates/spaceapi)
-[![Crates.io Downloads](https://img.shields.io/crates/d/spaceapi.svg)](https://crates.io/crates/spaceapi)
+This is an implementation of the [SpaceAPI](https://spaceapi.io/) v14 in Rust. It contains following parts
 
-This is an implementation of the [SpaceAPI](https://spaceapi.io/) v0.13 and v14
-in Rust. It contains both the type definitions as well as tools for
-serialization and deserialization to/from JSON using Serde.
+- `spaceapi-dezentrale`: Serialization and deserialization to/from JSON using Serde
+- `spaceapi-dezentrale-client`: Client to access the server via API
+- `spaceapi-dezentrale-server`: Server which provides the API 
 
-- Crate Documentation: https://docs.rs/spaceapi/
-- SpaceAPI Documentation: https://spaceapi.io/pages/docs.html
+## Build
 
-This library requires Rust 1.36.0 or newer.
-
+```
+cargo build --release
+```
 
 ## Usage
 
-Add `spaceapi` to your `Cargo.toml`:
+### Server
 
-    [dependencies]
-    spaceapi = "^0.8.1"
+Create a config file (see `config.sample.yml`) which describes some basic information about the space, see [below](#Configuration).
 
+Start the server.
 
-## Docs
+```
+CONFIG_FILE=config.sample.yml RUST_LOG=INFO \
+    spaceapi-dezentrale-server
+```
 
-You can build docs with `make docs`. Find them in the `target/doc/` directory.
+#### Configuration file
 
+The `publish` section is a representation of the [`Status` struct of the SpaceAPI](https://spaceapi.io/docs/), which will be used as a template for publishing the status.
+
+The server doesn't use much custom logic. See [Rocket documentation](https://rocket.rs/v0.5-rc/guide/configuration/#configuration) how to change parts like ports, limits, etc.
+
+The log level can be changed with the default mechanism of [`RUST_LOG` of `env_logger`](https://docs.rs/env_logger/0.10.0/env_logger/#enabling-logging).
+
+### Client
+
+Open the space
+
+```
+SPACEAPI_URL=http://localhost:8000 API_KEY=not-very-secure \
+    spaceapi-dezentrale-client open
+```
+
+Close the space
+
+```
+SPACEAPI_URL=http://localhost:8000 API_KEY=not-very-secure \
+    spaceapi-dezentrale-client close
+```
+
+Check if the space is open
+
+```
+SPACEAPI_URL=http://localhost:8000 API_KEY=not-very-secure \
+    spaceapi-dezentrale-client is-open
+```
 
 ## License
 
@@ -35,11 +64,3 @@ Licensed under either of
  * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
-
-
-### Contribution
-
-Unless you explicitly state otherwise, any contribution intentionally
-submitted for inclusion in the work by you, as defined in the Apache-2.0
-license, shall be dual licensed as above, without any additional terms or
-conditions.

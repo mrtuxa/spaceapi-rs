@@ -1,0 +1,19 @@
+[package]
+name = "spaceapi-dezentrale-client"
+
+categories.workspace = true
+edition.workspace = true
+keywords.workspace = true
+include.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[dependencies]
+clap.workspace = true
+reqwest.workspace = true
+rocket.workspace = true
+spaceapi-dezentrale.workspace = true
+spaceapi-dezentrale-server.workspace = true
+tokio.workspace = true
