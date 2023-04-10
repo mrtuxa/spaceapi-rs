@@ -1,0 +1,56 @@
+name: CI
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      test:
+        - uses: actions/checkout@v3
+        - uses: cachix/install-nix-action@v19
+          with:
+            nix_path: nixpkgs=channel:nixos-unstable
+        - run: nix-shell -p cargo rustc openssl pkg-config --comand "cargo test"
+      binaries_x86_64:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v3
+
+          - uses: cachix/install-nix-action@v19
+            with:
+              github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          - name: check Nix Flake
+            run: nix flake check
+
+          - uses: cachix/install-nix-action@v19
+          - name: update Nix Flake
+          - run: nix flake update
+
+          - uses: cachix/install-nix-action@v19
+          - name: Build binary
+          - run: nix build
+
+          - name: Archive artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-without-markdown
+          path: |
+            result/bin/spaceapi-dezentrale-client
+            result/bin/spaceapi-dezentrale-server
+    lint:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - uses: cachix/install-nix-action@v19
+        - run: nix-shell -p cargo openssl pkg-config --command "cargo clippy --all-targets --all-features -- -D warnings"
+    fmt:
+      runs-on: ubuntu-latest
+      stepts:
+        - uses: actions/checkout@v3
+        - uses: cachix/install-nix-action@v19
+        - run: nix-shell -p cargo openssl pkg-config --command "cargo fmt -- --check"

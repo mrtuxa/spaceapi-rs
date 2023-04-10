@@ -213,8 +213,7 @@ mod test {
 
     pub(crate) async fn tester(config: SpaceConfig) -> Client {
         let rocket = serve(config).ignite().await.expect("A server");
-        let client = Client::tracked(rocket).await.expect("A client");
-        client
+        Client::tracked(rocket).await.expect("A client")
     }
 
     #[tokio::test]
