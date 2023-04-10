@@ -15,13 +15,28 @@ jobs:
 
   binaries_x86-64:
     runs-on: ubuntu-22.04
-    container: rust:1.67
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+
+      - name: check Nix Flakes
+      - uses: cachix/install-nix-action@v19
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - run: nix flake check
+      - name: update Nix Flake
+      - uses: cachix/install-nix-action@v19
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - run: nix flake update
       - name: Build binaries
-        run: cargo build --release
+      - uses: cachix/install-nix-action@v19
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - run: nix build
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
@@ -30,7 +45,6 @@ jobs:
           path: |
             target/release/spaceapi-dezentrale-client
             target/release/spaceapi-dezentrale-server
-
   lint:
     runs-on: ubuntu-22.04
     container: rust:1.67
