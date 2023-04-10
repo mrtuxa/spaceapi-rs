@@ -4,53 +4,45 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  workflow_dispatch:
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    container: rust:1.67
     steps:
-      test:
-        - uses: actions/checkout@v3
-        - uses: cachix/install-nix-action@v19
-          with:
-            nix_path: nixpkgs=channel:nixos-unstable
-        - run: nix-shell -p cargo rustc openssl pkg-config --comand "cargo test"
-      binaries_x86_64:
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout repository
-            uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - run: cargo test
 
-          - uses: cachix/install-nix-action@v19
-            with:
-              github_access_token: ${{ secrets.GITHUB_TOKEN }}
-          - name: check Nix Flake
-            run: nix flake check
+  binaries_x86-64:
+    runs-on: ubuntu-22.04
+    container: rust:1.67
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-          - uses: cachix/install-nix-action@v19
-          - name: update Nix Flake
-          - run: nix flake update
+      - name: Build binaries
+        run: cargo build --release
 
-          - uses: cachix/install-nix-action@v19
-          - name: Build binary
-          - run: nix build
-
-          - name: Archive artifacts
+      - name: Archive artifacts
         uses: actions/upload-artifact@v3
         with:
           name: dist-without-markdown
           path: |
-            result/bin/spaceapi-dezentrale-client
-            result/bin/spaceapi-dezentrale-server
-    lint:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
-        - uses: cachix/install-nix-action@v19
-        - run: nix-shell -p cargo openssl pkg-config --command "cargo clippy --all-targets --all-features -- -D warnings"
-    fmt:
-      runs-on: ubuntu-latest
-      stepts:
-        - uses: actions/checkout@v3
-        - uses: cachix/install-nix-action@v19
-        - run: nix-shell -p cargo openssl pkg-config --command "cargo fmt -- --check"
+            target/release/spaceapi-dezentrale-client
+            target/release/spaceapi-dezentrale-server
+
+  lint:
+    runs-on: ubuntu-22.04
+    container: rust:1.67
+    steps:
+      - uses: actions/checkout@v3
+      - run: rustup component add clippy
+      - run: cargo clippy --all-targets --all-features -- -D warnings
+
+  fmt:
+    runs-on: ubuntu-22.04
+    container: rust:1.67
+    steps:
+      - uses: actions/checkout@v3
+      - run: rustup component add rustfmt
+      - run: cargo fmt -- --check
