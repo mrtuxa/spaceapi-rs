@@ -8,8 +8,16 @@ This is an implementation of the [SpaceAPI](https://spaceapi.io/) v14 in Rust. I
 
 ## Build
 
-```
+### with cargo
+
+```console
 cargo build --release
+```
+
+### with Nix (only with Flake Support)
+```console
+nix build
+
 ```
 
 ## Usage
